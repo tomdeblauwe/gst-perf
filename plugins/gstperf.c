@@ -590,8 +590,9 @@ gst_perf_transform_ip (GstBaseTransform * trans, GstBuffer * buf)
 
     idx =
         g_snprintf (info, GST_PERF_MSG_MAX_SIZE,
-        "perf: %s; timestamp: %" GST_TIME_FORMAT "; "
-        "bps: %0.03f; mean_bps: %0.03f; " "fps: %0.03f; mean_fps: %0.03f",
+        "{\"name\":\"%s\",\"ts\":\"%" GST_TIME_FORMAT "\","
+        "\"bps\":%0.03f,\"mean_bps\":%0.03f,"
+        "\"fps\":%0.03f,\"mean_fps\":%0.03f",
         GST_OBJECT_NAME (perf), GST_TIME_ARGS (time), bps, mean_bps,
         fps, perf->fps);
 
@@ -606,8 +607,10 @@ gst_perf_transform_ip (GstBaseTransform * trans, GstBuffer * buf)
       guint32 cpu_load;
       gst_perf_cpu_get_load (perf, &cpu_load);
       idx = g_snprintf (&info[idx], GST_PERF_MSG_MAX_SIZE - idx,
-          "; cpu: %d; ", cpu_load);
+          ",\"cpu\":%d", cpu_load);
     }
+
+    idx = g_snprintf (&info[idx], GST_PERF_MSG_MAX_SIZE - idx, "}");
 
     gst_element_post_message (
         (GstElement *) perf,
